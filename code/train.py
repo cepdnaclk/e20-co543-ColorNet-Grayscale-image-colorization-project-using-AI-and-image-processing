@@ -1,3 +1,5 @@
+import os
+import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
@@ -6,9 +8,9 @@ from models.colorization_cnn import ZhangColorizationNet
 from data.dataset import LabColorizationDataset
 
 # Hyperparameters
-batch_size = 32
+batch_size = 64
 epochs = 35
-learning_rate = 0.001
+learning_rate = 0.005
 
 # Dataset and DataLoader
 dataset = LabColorizationDataset('./dataset/4/l/', './dataset/4/ab/')
@@ -35,7 +37,6 @@ except FileNotFoundError:
     print("No checkpoint found, starting training from scratch.")
 
 # Training loop
-# Training loop
 for epoch in range(start_epoch, epochs):
     for i, (L, ab) in enumerate(dataloader):
         L, ab = L.to(device), ab.to(device)
@@ -45,7 +46,10 @@ for epoch in range(start_epoch, epochs):
 
         # Print the shape of L and ab before the forward pass
         print(f"Input L shape: {L.shape}")  # Expected: [batch_size, 1, H, W]
-        print(f"Target ab shape: {ab.shape}")  # Expected: [batch_size, 2, H, W]
+        print(f"Target ab shape: {ab.shape}")  # Expected: [batch_size, 224, 224, 2]
+
+        # Permute ab to get correct shape: [batch_size, 2, H, W]
+        ab = ab.permute(0, 3, 1, 2)  # Reorder to (batch_size, 2, H, W)
 
         # Model forward pass
         output = model(L)
@@ -58,9 +62,6 @@ for epoch in range(start_epoch, epochs):
 
         # Print the shape of ab_resized
         print(f"Resized ab shape: {ab_resized.shape}")  # Expected: [batch_size, 2, H, W]
-
-        # Correcting the channel dimension order by permuting ab_resized
-        ab_resized = ab_resized.permute(0, 3, 1, 2)  # Reorder to (batch_size, 2, H, W)
 
         # Loss calculation
         loss = criterion(output, ab_resized)
