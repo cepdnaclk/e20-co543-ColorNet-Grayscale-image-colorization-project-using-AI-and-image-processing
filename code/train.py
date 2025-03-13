@@ -11,7 +11,7 @@ epochs = 50
 learning_rate = 0.001
 
 # Dataset and DataLoader
-dataset = LabColorizationDataset('./dataset/processed/')
+dataset = LabColorizationDataset('./dataset/4/l/', './dataset/4/ab/')
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 # Device configuration
