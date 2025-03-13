@@ -25,6 +25,7 @@ class LabColorizationDataset(Dataset):
         ab_files = sorted([f for f in os.listdir(self.ab_dir) if f.startswith("ab") and f.endswith(".npy")])
         ab_arrays = [np.load(os.path.join(self.ab_dir, f)).astype(np.float32) for f in ab_files]
         self.ab_data = np.concatenate(ab_arrays, axis=0)  # (N, 2, H, W)
+        print(len(self.ab_data), len(self.L_data))
         print("finish loading ab")
 
         # Ensure data consistency
