@@ -14,13 +14,18 @@ class LabColorizationDataset(Dataset):
         self.ab_dir = os.path.join(root_dir2, "ab")
 
         # Load grayscale images
+        print("start loading gray scale")
         self.L_data = np.load(self.L_path).astype(np.float32)  # (N, H, W)
         self.L_data = np.expand_dims(self.L_data, axis=1)  # (N, 1, H, W)  <-- FIXED!
+        print("finish loading gray scale")
 
         # Load and concatenate all ab .npy files
+        print("start loading ab")
+        
         ab_files = sorted([f for f in os.listdir(self.ab_dir) if f.startswith("ab") and f.endswith(".npy")])
         ab_arrays = [np.load(os.path.join(self.ab_dir, f)).astype(np.float32) for f in ab_files]
         self.ab_data = np.concatenate(ab_arrays, axis=0)  # (N, 2, H, W)
+        print("finish loading ab")
 
         # Ensure data consistency
         assert self.L_data.shape[0] == self.ab_data.shape[0], \
