@@ -6,9 +6,9 @@ from models.colorization_cnn import ZhangColorizationNet
 from data.dataset import LabColorizationDataset
 
 # Hyperparameters
-batch_size = 64
+batch_size = 32
 epochs = 35
-learning_rate = 0.005
+learning_rate = 0.001
 
 # Dataset and DataLoader
 dataset = LabColorizationDataset('./dataset/4/l/', './dataset/4/ab/')
@@ -47,8 +47,9 @@ for epoch in range(start_epoch, epochs):
 
         # Resize ab channels to match the output size
         ab_resized = F.interpolate(ab, size=(output.shape[2], output.shape[3]), mode='bilinear', align_corners=False)
+        
+        # Correcting the channel dimension order by permuting ab_resized
         ab_resized = ab_resized.permute(0, 3, 1, 2)  # Reorder to (batch_size, 2, H, W)
-
 
         # Loss calculation
         loss = criterion(output, ab_resized)
