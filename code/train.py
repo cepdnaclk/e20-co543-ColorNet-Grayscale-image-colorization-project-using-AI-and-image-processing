@@ -1,16 +1,15 @@
 import os
-import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from models.colorization_cnn import ZhangColorizationNet
-from data.dataset import LabColorizationDataset
+from models.unet_colorization_cnn import UNetColorizationNet  # Import updated model
+from data.dataset import LabColorizationDataset  # Import updated dataset
 
 # Hyperparameters
 batch_size = 64
 epochs = 35
-learning_rate = 0.005
+learning_rate = 1e-4  # Lowered learning rate for better stability
 
 # Dataset and DataLoader
 dataset = LabColorizationDataset('./dataset/4/l/', './dataset/4/ab/')
@@ -19,10 +18,11 @@ dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
-model = ZhangColorizationNet().to(device)
+model = UNetColorizationNet().to(device)
 
 # Loss and optimizer
-criterion = torch.nn.MSELoss()
+criterion_mse = torch.nn.MSELoss()
+criterion_l1 = torch.nn.L1Loss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # Load checkpoint if available
@@ -49,12 +49,11 @@ for epoch in range(start_epoch, epochs):
         # Model forward pass
         output = model(L)
 
-
         # Resize ab channels to match the output size
         ab_resized = F.interpolate(ab, size=(output.shape[2], output.shape[3]), mode='bilinear', align_corners=False)
 
-        # Loss calculation
-        loss = criterion(output, ab_resized)
+        # Loss calculation (MSE + L1)
+        loss = criterion_mse(output, ab_resized) + 0.1 * criterion_l1(output, ab_resized)
         loss.backward()
         optimizer.step()
 
