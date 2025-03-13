@@ -44,24 +44,14 @@ for epoch in range(start_epoch, epochs):
         optimizer.zero_grad()
         L = L.float()
 
-        # Print the shape of L and ab before the forward pass
-        print(f"Input L shape: {L.shape}")  # Expected: [batch_size, 1, H, W]
-        print(f"Target ab shape: {ab.shape}")  # Expected: [batch_size, 224, 224, 2]
-
-        # Permute ab to get correct shape: [batch_size, 2, H, W]
         ab = ab.permute(0, 3, 1, 2)  # Reorder to (batch_size, 2, H, W)
 
         # Model forward pass
         output = model(L)
 
-        # Print the shape of model output
-        print(f"Model output shape: {output.shape}")  # Expected: [batch_size, 2, H, W]
 
         # Resize ab channels to match the output size
         ab_resized = F.interpolate(ab, size=(output.shape[2], output.shape[3]), mode='bilinear', align_corners=False)
-
-        # Print the shape of ab_resized
-        print(f"Resized ab shape: {ab_resized.shape}")  # Expected: [batch_size, 2, H, W]
 
         # Loss calculation
         loss = criterion(output, ab_resized)
