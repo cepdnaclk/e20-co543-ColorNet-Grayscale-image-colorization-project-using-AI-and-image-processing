@@ -3,7 +3,7 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from models.unet_colorization_cnn import UNetColorizationNet  # Import updated model
+from models.colorization_cnn import UNetColorizationNet  # Import updated model
 from data.dataset import LabColorizationDataset  # Import updated dataset
 
 # Hyperparameters
