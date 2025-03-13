@@ -47,6 +47,8 @@ for epoch in range(start_epoch, epochs):
 
         # Resize ab channels to match the output size
         ab_resized = F.interpolate(ab, size=(output.shape[2], output.shape[3]), mode='bilinear', align_corners=False)
+        ab_resized = ab_resized.permute(0, 3, 1, 2)  # Reorder to (batch_size, 2, H, W)
+
 
         # Loss calculation
         loss = criterion(output, ab_resized)
