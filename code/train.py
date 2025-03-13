@@ -6,9 +6,9 @@ from models.colorization_cnn import ZhangColorizationNet
 from data.dataset import LabColorizationDataset
 
 # Hyperparameters
-batch_size = 32
-epochs = 50
-learning_rate = 0.001
+batch_size = 64
+epochs = 35
+learning_rate = 0.005
 
 # Dataset and DataLoader
 dataset = LabColorizationDataset('./dataset/4/l/', './dataset/4/ab/')
